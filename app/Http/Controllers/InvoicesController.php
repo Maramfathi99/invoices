@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InvoicesExport;
 use App\Models\invoice_attachments;
 use App\Models\Invoices;
 use App\Models\invoices_details;
@@ -10,7 +11,9 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Excel;
 
 class InvoicesController extends Controller
 {
@@ -91,11 +94,11 @@ class InvoicesController extends Controller
             $request->pic->move(public_path('Attachments/' . $invoice_number), $imageName);
         }
 
-        $user = User::get();
-        $invoices = invoices::latest()->first();
-        Notification::send($user, new \App\Notifications\Add_invoice_new($invoices));
-
-        event(new MyEventClass('hello world'));
+//        $user = User::get();
+//        $invoices = invoices::latest()->first();
+//        Notification::send($user, new \App\Notifications\Add_invoice_new($invoices));
+//
+//        event(new MyEventClass('hello world'));
 
         session()->flash('Add', 'تم اضافة الفاتورة بنجاح');
         return back();
@@ -267,5 +270,9 @@ class InvoicesController extends Controller
     {
         $invoices = invoices::where('id', $id)->first();
         return view('invoices.Print_invoice',compact('invoices'));
+    }
+    public function export()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new InvoicesExport(), 'invoices.xlsx');
     }
 }

@@ -39,5 +39,10 @@ Route::get('/Invoice_Paid',  [\App\Http\Controllers\InvoicesController::class,'I
 Route::get('/Invoice_UnPaid',  [\App\Http\Controllers\InvoicesController::class,'Invoice_UnPaid']);
 Route::get('/Invoice_Partial',  [\App\Http\Controllers\InvoicesController::class,'Invoice_Partial']);
 Route::get('Print_invoice/{id}', [\App\Http\Controllers\InvoicesController::class,'Print_invoice']);
+Route::get('export_invoices', [\App\Http\Controllers\InvoicesController::class, 'export']);
 
+Route::group(['middleware' => ['auth']], function() {
+    Route::resource('roles', \App\Http\Controllers\RoleController::class);
+    Route::resource('users', \App\Http\Controllers\UserController::class);
+});
 Route::get('/{page}', [\App\Http\Controllers\AdminController::class, 'index']);
